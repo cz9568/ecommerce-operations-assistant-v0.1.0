@@ -1,0 +1,34 @@
+# Local secrets
+.env
+.env.*
+!.env.example
+
+# Python
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+.venv/
+dist/
+build/
+*.egg-info/
+
+# Node
+node_modules/
+frontend/dist/
+*.tsbuildinfo
+npm-debug.log*
+
+# IDE / OS
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db
+
+# Runtime files
+storage/*
+!storage/.gitkeep
+logs/
+

@@ -1,0 +1,76 @@
+name: quality-gates
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  test-build-and-audit:
+    runs-on: ubuntu-latest
+    services:
+      mysql:
+        image: mysql:8.4
+        env:
+          MYSQL_DATABASE: ecommerce_ops
+          MYSQL_USER: ecommerce_ci
+          MYSQL_PASSWORD: ci-password
+          MYSQL_ROOT_PASSWORD: ci-root-password
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd="mysqladmin ping -h 127.0.0.1 -uroot -pci-root-password --silent"
+          --health-interval=10s --health-timeout=5s --health-retries=20
+    env:
+      APP_ENV: test
+      APP_DEBUG: "false"
+      DATABASE_HOST: 127.0.0.1
+      DATABASE_PORT: 3306
+      DATABASE_NAME: ecommerce_ops
+      DATABASE_USER: ecommerce_ci
+      DATABASE_PASSWORD: ci-password
+      JWT_SECRET: ci-only-secret-ci-only-secret-ci-only-secret
+      GENERATION_PROVIDER: mock
+      LLM_MODEL: mock
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v6
+        with:
+          version: "0.11.x"
+          enable-cache: true
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+      - name: Install Python dependencies
+        run: uv sync --frozen
+      - name: Backend lint and tests
+        run: |
+          uv run ruff check backend
+          uv run pytest --junitxml=reports/pytest.xml
+      - name: Migration verification
+        run: |
+          uv run alembic upgrade head
+          uv run alembic check
+      - name: Backend dependency audit
+        run: |
+          uv export --frozen --no-dev --format requirements-txt --output-file reports/runtime-requirements.txt
+          uvx pip-audit -r reports/runtime-requirements.txt
+      - name: Static security checks
+        run: |
+          uv run python -m backend.scripts.security_scan
+          uvx bandit -r backend/app -lll
+      - name: Frontend checks
+        working-directory: frontend
+        run: |
+          npm ci
+          npm run type-check
+          npm run build
+          npm audit --omit=dev --audit-level=high
+      - name: Upload diagnostic evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: quality-reports
+          path: reports/
+          if-no-files-found: ignore

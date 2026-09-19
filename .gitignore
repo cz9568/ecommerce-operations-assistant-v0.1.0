@@ -31,4 +31,5 @@ Thumbs.db
 storage/*
 !storage/.gitkeep
 logs/
-
+reports/
+release/

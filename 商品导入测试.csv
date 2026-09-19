@@ -1,0 +1,4 @@
+﻿store_id,name,category,price,cost,status,target_audience,selling_points,product_url,images
+1,测试导入-轻量保温杯-20260918,家居日用,129.00,48.50,active,通勤上班族与学生,316不锈钢内胆，长效保温，轻量便携,https://example.com/products/test-cup-20260918,https://picsum.photos/seed/test-cup-a/800/800|https://picsum.photos/seed/test-cup-b/800/800
+1,测试导入-桌面补光灯-20260918,数码配件,199.00,82.00,draft,直播创作者与居家办公人群,三档色温，可调亮度，折叠收纳,https://example.com/products/test-light-20260918,https://picsum.photos/seed/test-light/800/800
+1,测试导入-旅行收纳包-20260918,箱包收纳,79.90,26.80,inactive,短途旅行与健身人群,干湿分离，多层分区，防泼水面料,https://example.com/products/test-bag-20260918,https://picsum.photos/seed/test-bag-a/800/800|https://picsum.photos/seed/test-bag-b/800/800
